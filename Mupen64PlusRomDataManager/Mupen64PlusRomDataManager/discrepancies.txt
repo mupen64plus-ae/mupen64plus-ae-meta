@@ -1,0 +1,67 @@
+AeroGauge
+  status mismatch
+  players mismatch
+  savetype mismatch
+  rumble mismatch
+Automobili Lamborghini
+  players mismatch
+Donkey Kong 64
+  rumble mismatch
+  players mismatch
+Excitebike 64
+  players mismatch
+F-ZERO X
+  players mismatch
+  savetype mismatch
+GoldenEye 007
+  status mismatch
+  players mismatch
+  savetype mismatch
+  rumble mismatch
+Holy Magic Century
+  players mismatch
+  savetype mismatch
+Hybrid Heaven
+  players mismatch
+  savetype mismatch
+Jet Force Gemini
+  savetype mismatch
+  players mismatch
+  rumble mismatch
+Kobe Bryant's NBA Courtside
+  players mismatch
+  savetype mismatch
+Legend of Zelda, The - Ocarina of Time
+  status mismatch
+  players mismatch
+  savetype mismatch
+  rumble mismatch
+Mario Kart 64
+  rumble mismatch
+Mortal Kombat Mythologies - Sub-Zero
+  players mismatch
+  savetype mismatch
+  rumble mismatch
+Nagano Winter Olympics '98
+  players mismatch
+  savetype mismatch
+  rumble mismatch
+Perfect Dark
+  players mismatch
+  rumble mismatch
+Pocket Monsters Stadium
+  players mismatch
+Snowboard Kids 2
+  savetype mismatch
+Super Robot Taisen 64
+  players mismatch
+  rumble mismatch
+Tetris 64
+  players mismatch
+  rumble mismatch
+Tom Clancy's Rainbow Six
+  players mismatch
+Turok 2 - Seeds of Evil
+  savetype mismatch
+Wonder Project J2 - Koruro no Mori no Jozet
+  players mismatch
