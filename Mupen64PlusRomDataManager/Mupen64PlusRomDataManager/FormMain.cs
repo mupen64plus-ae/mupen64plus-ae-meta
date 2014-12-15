@@ -14,6 +14,7 @@ namespace Mupen64PlusRomDataManager
     public partial class FormMain : Form
     {
         private const string SECTIONLESS = "SECTIONLESS";
+        private const string OUT_FOLDER = "Pages";
 
         public FormMain()
         {
@@ -119,45 +120,53 @@ namespace Mupen64PlusRomDataManager
 
         private void GenerateWiki(Dictionary<string, GamePage> games)
         {
-            DotNetWikiBot.Site site = new DotNetWikiBot.Site("http://littleguy77.wikia.com/");
-
-            richTextBox1.Clear();
-            GenerateGamePages(games, site);
-            GenerateHome(games, site);
-            richTextBox1.AppendText("\nFinished generating " + games.Count + " games.");
+            richTextBox.Clear();
+            Directory.CreateDirectory(OUT_FOLDER);
+            GenerateGamePages(games);
+            GenerateHome(games);
+            richTextBox.AppendText("\nFinished generating " + games.Count + " games.");
         }
 
-        private void GenerateGamePages(Dictionary<string, GamePage> games, DotNetWikiBot.Site site)
+        private void GenerateGamePages(Dictionary<string, GamePage> games)
         {
-            //foreach (var page in games.Values)
-            for (int i = 0; i < games.Count; i++)
+            foreach (var page in games.Values)
             {
-                GamePage page = games.ElementAt(i).Value;
-
-                richTextBox1.AppendText(page.title + "\n");
+                richTextBox.AppendText(page.title + "\n");
                 Application.DoEvents();
 
-                //if (i < 10)
+                using (StreamWriter writer = new StreamWriter(OUT_FOLDER + "\\" + page.title + ".md"))
                 {
-                    DotNetWikiBot.Page p = new DotNetWikiBot.Page(site, page.title);
-                    p.Load();
-                    p.text = page.BodyText;
-                    p.AddToCategory("Games");
-                    p.Save();
+                    writer.Write(page.BodyText);
                 }
             }
         }
 
-        private void GenerateHome(Dictionary<string, GamePage> games, DotNetWikiBot.Site site)
+        private void GenerateHome(Dictionary<string, GamePage> games)
         {
             List<string> titles = games.Keys.ToList();
             titles.Sort();
 
             StringBuilder builder = new StringBuilder();
-            builder.AppendLine("==Games==\n");
-            builder.AppendLine("{| class=\"wikitable sortable\"");
-            builder.AppendLine("|-");
-            builder.AppendLine("! Name !! Status !! Players !! Rumble !! SaveType");
+            builder.AppendLine("## Games\n");
+            //for (int i = 0; i < titles.Count; i++)
+            //{
+            //    GamePage page = games[titles[i]];
+            //    string status = "Unknown";
+            //    string players = "Unknown";
+            //    string rumble = "Unknown";
+            //    string savetype = "Unknown";
+            //    if (page.roms.Count > 0)
+            //    {
+            //        RomEntry firstRom = page.roms[0];
+            //        status = firstRom.status;
+            //        players = firstRom.players;
+            //        rumble = firstRom.rumble;
+            //        savetype = firstRom.savetype;
+            //    }
+            //    builder.AppendFormat("- [[{0}]]\n", page.title);
+            //}
+            builder.AppendLine("Name | Status | Players | Rumble | SaveType");
+            builder.AppendLine("-----|--------|---------|--------|---------");
             for (int i = 0; i < titles.Count; i++)
             {
                 GamePage page = games[titles[i]];
@@ -173,36 +182,35 @@ namespace Mupen64PlusRomDataManager
                     rumble = firstRom.rumble;
                     savetype = firstRom.savetype;
                 }
-                builder.AppendLine("|-");
-                builder.AppendFormat("| [[{0}]] || {1} || {2} || {3} || {4}\n", page.title, status, players, rumble, savetype);
+                //builder.AppendFormat("[[{0}]] | {1} | {2} | {3} | {4}\n", page.title, status, players, rumble, savetype);
+                builder.AppendFormat("[{0}]({0}) | {1} | {2} | {3} | {4}\n", page.title, status, players, rumble, savetype);
             }
-            builder.AppendLine("|}");
-
-            DotNetWikiBot.Page index = new DotNetWikiBot.Page(site, "AllGames");
-            index.Load();
-            index.text = builder.ToString();
-            index.Save();
+ 
+            using (StreamWriter writer = new StreamWriter(OUT_FOLDER + "\\Home.md"))
+            {
+                writer.Write(builder.ToString());
+            }
         }
 
         private void ValidateDatabase(Dictionary<string, RomEntry> roms, Dictionary<string, GamePage> pages)
         {
-            richTextBox1.Clear();
+            richTextBox.Clear();
             foreach (RomEntry rom in roms.Values)
             {
                 if (rom.md5 == rom.refmd5)
-                    richTextBox1.AppendText(rom.goodname + "  self reference\n");
+                    richTextBox.AppendText(rom.goodname + "  self reference\n");
 
                 if (rom.refmd5 != null)
                 {
                     if (!roms.ContainsKey(rom.refmd5))
-                        richTextBox1.AppendText(rom.goodname + "  invalid reference\n");
+                        richTextBox.AppendText(rom.goodname + "  invalid reference\n");
                     else
                     {
                         var parent = roms[rom.refmd5];
                         if (parent.refmd5 != null)
-                            richTextBox1.AppendText(rom.goodname + "  double-linked reference\n");
+                            richTextBox.AppendText(rom.goodname + "  double-linked reference\n");
                         if (parent.BaseName != rom.BaseName)
-                            richTextBox1.AppendText(rom.goodname + "  incorrect reference\n");
+                            richTextBox.AppendText(rom.goodname + "  incorrect reference\n");
                     }
                 }
                 Application.DoEvents();
@@ -217,25 +225,25 @@ namespace Mupen64PlusRomDataManager
                 foreach (RomEntry rom in page.roms)
                 {
                     if (status != null && status != rom.status)
-                        richTextBox1.AppendText(rom.goodname + "  status mismatch" + "\n");
+                        richTextBox.AppendText(rom.goodname + "  status mismatch" + "\n");
                     status = rom.status;
 
                     if (players != null && players != rom.players)
-                        richTextBox1.AppendText(rom.goodname + "  players mismatch" + "\n");
+                        richTextBox.AppendText(rom.goodname + "  players mismatch" + "\n");
                     players = rom.players;
 
                     if (savetype != null && savetype != rom.savetype)
-                        richTextBox1.AppendText(rom.goodname + "  savetype mismatch" + "\n");
+                        richTextBox.AppendText(rom.goodname + "  savetype mismatch" + "\n");
                     savetype = rom.savetype;
 
                     if (rumble != null && rumble != rom.rumble)
-                        richTextBox1.AppendText(rom.goodname + "  rumble mismatch" + "\n");
+                        richTextBox.AppendText(rom.goodname + "  rumble mismatch" + "\n");
                     rumble = rom.rumble;
 
                     Application.DoEvents();
                 }
             }
-            richTextBox1.AppendText("\nFinished checking database.");
+            richTextBox.AppendText("\nFinished checking database.");
         }
 
         public class RomEntry
@@ -307,7 +315,7 @@ namespace Mupen64PlusRomDataManager
             public readonly string title;
             public readonly List<RomEntry> roms;
 
-            private const string artformat = @"[http://paulscode.com/downloads/Mupen64Plus-AE/CoverArt/{0}.png Link]";
+            private const string artformat = @"![](http://paulscode.com/downloads/Mupen64Plus-AE/CoverArt/{0}.png)";
 
             public GamePage(string title)
             {
@@ -331,22 +339,18 @@ namespace Mupen64PlusRomDataManager
                 get
                 {
                     StringBuilder builder = new StringBuilder();
-                    builder.AppendLine("==Cover Art==");
-                    builder.AppendLine();
                     builder.AppendLine(string.Format(artformat, ArtName));
                     builder.AppendLine();
-                    builder.AppendLine("==Known Versions==");
+                    builder.AppendLine("## Recommended Settings");
                     builder.AppendLine();
-                    List<string> goodnames = roms.Select(r => r.goodname).ToList();
-                    goodnames.Sort();
-                    foreach (string goodname in goodnames)
+                    builder.AppendLine("## Known Issues");
+                    builder.AppendLine();
+                    builder.AppendLine("## Known Versions");
+                    builder.AppendLine();
+                    foreach (var rom in roms.OrderBy(r => r.goodname))
                     {
-                        builder.AppendLine(";" + goodname);
+                        builder.AppendLine("- `" + rom.goodname + "  " + rom.md5 + "`");
                     }
-                    builder.AppendLine();
-                    builder.AppendLine("==Known Issues==");
-                    builder.AppendLine();
-                    builder.AppendLine("==Recommended Settings==");
                     return builder.ToString();
                 }
             }
