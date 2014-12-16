@@ -85,6 +85,7 @@ namespace Mupen64PlusRomDataManager
 
         private static bool UnescapePredicate(char cc)
         {
+            // See https://github.com/gollum/gollum/blob/cce871c30e5707e64f0bc7aad8b5153e841906a2/lib/gollum/uri_encode_component.rb
             // a - z
             if (97 <= cc && cc <= 122)
                 return true;
