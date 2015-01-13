@@ -1,2 +1,2 @@
-mupen64plus-meta-utilities
-==========================
+mupen64plus-ae-meta
+===================
